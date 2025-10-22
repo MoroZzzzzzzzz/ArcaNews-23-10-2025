@@ -44,6 +44,7 @@ export const languages: { [key: string]: string } = {
 export const translations = {
   en: {
     // Navigation
+    'nav.home': 'Home',
     'nav.login': 'Login',
     'nav.register': 'Register',
     'nav.dashboard': 'Dashboard',
@@ -127,6 +128,7 @@ export const translations = {
   },
   ru: {
     // Navigation
+    'nav.home': 'На главную',
     'nav.login': 'Войти',
     'nav.register': 'Регистрация',
     'nav.dashboard': 'Личный кабинет',

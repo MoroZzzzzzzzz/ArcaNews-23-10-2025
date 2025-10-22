@@ -7,11 +7,14 @@ import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from './language-switcher';
 import { useState } from 'react';
 import { getTranslation } from '@/lib/i18n';
-import { User, LogOut, PlusCircle } from 'lucide-react';
+import { User, LogOut, PlusCircle, Home } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export function Navbar() {
   const { data: session, status } = useSession() || {};
   const [currentLang, setCurrentLang] = useState('en');
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
 
   const t = (key: string) => getTranslation(key, currentLang);
 
@@ -22,7 +25,18 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-end items-center h-16">
+        <div className="flex justify-between items-center h-16">
+          {/* Home button - shown on all pages except homepage */}
+          {!isHomePage && (
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="gap-2">
+                <Home className="h-4 w-4" />
+                {t('nav.home')}
+              </Button>
+            </Link>
+          )}
+          {isHomePage && <div />}
+          
           <div className="flex items-center gap-4">
             <LanguageSwitcher
               currentLang={currentLang}

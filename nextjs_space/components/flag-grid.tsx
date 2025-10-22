@@ -17,11 +17,11 @@ export function FlagGrid() {
   ];
 
   return (
-    <div className="flex flex-col items-center gap-6 mx-auto max-w-2xl">
+    <div className="flex flex-col items-center gap-12 mx-auto max-w-3xl">
       {rows.map((rowCountries, rowIndex) => (
         <div 
           key={`row-${rowIndex}`}
-          className="flex justify-center gap-4"
+          className="flex justify-center gap-8"
         >
           {rowCountries.map((country, countryIndex) => {
             const index = rowIndex * 4 + countryIndex;
@@ -42,8 +42,8 @@ export function FlagGrid() {
                   href={`/country/${country?.code?.toLowerCase()}`}
                   className="group relative block"
                 >
-                  <div className="w-14 h-14 bg-white border-2 border-gray-200 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center group-hover:border-blue-400">
-                    <span className="text-3xl transition-transform duration-300">
+                  <div className="w-14 h-14 bg-white border-2 border-gray-200 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center group-hover:border-blue-400 overflow-hidden">
+                    <span className="text-5xl leading-none transition-transform duration-300">
                       {country?.flag}
                     </span>
                   </div>

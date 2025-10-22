@@ -10,7 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BalanceDisplay } from '@/components/balance-display';
 import { ArticleCard } from '@/components/articles/article-card';
 import { getTranslation } from '@/lib/i18n';
@@ -230,88 +229,117 @@ export function DashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="all">All</TabsTrigger>
-                    <TabsTrigger value="earned">{t('dashboard.earned')}</TabsTrigger>
-                    <TabsTrigger value="spent">{t('dashboard.spent')}</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="all" className="mt-4 space-y-2">
-                    {transactions?.length > 0 ? (
-                      transactions.slice(0, 10).map((tx) => (
-                        <div 
-                          key={tx?.id || `tx-${Math.random()}`}
-                          className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
-                        >
-                          <div className="flex items-center gap-2">
-                            {tx?.type === 'EARNING' ? (
+                {/* Filter Buttons */}
+                <div className="flex gap-2 mb-4">
+                  <Button
+                    variant={activeTab === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setActiveTab('all')}
+                    className="flex-1"
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={activeTab === 'earned' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setActiveTab('earned')}
+                    className="flex-1"
+                  >
+                    {t('dashboard.earned')}
+                  </Button>
+                  <Button
+                    variant={activeTab === 'spent' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setActiveTab('spent')}
+                    className="flex-1"
+                  >
+                    {t('dashboard.spent')}
+                  </Button>
+                </div>
+
+                {/* Transaction List */}
+                <div className="space-y-2">
+                  {activeTab === 'all' && (
+                    <>
+                      {transactions?.length > 0 ? (
+                        transactions.slice(0, 10).map((tx) => (
+                          <div 
+                            key={tx?.id || `tx-${Math.random()}`}
+                            className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                          >
+                            <div className="flex items-center gap-2">
+                              {tx?.type === 'EARNING' ? (
+                                <TrendingUp className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <TrendingDown className="h-4 w-4 text-red-500" />
+                              )}
+                              <span className="text-sm">{tx?.description || 'Transaction'}</span>
+                            </div>
+                            <span className={`text-sm font-semibold ${
+                              tx?.type === 'EARNING' ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              {tx?.type === 'EARNING' ? '+' : '-'}{tx?.amount || 0} ACD
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-4">
+                          No transactions yet
+                        </p>
+                      )}
+                    </>
+                  )}
+
+                  {activeTab === 'earned' && (
+                    <>
+                      {transactions?.filter(tx => tx?.type === 'EARNING')?.length > 0 ? (
+                        transactions.filter(tx => tx?.type === 'EARNING').slice(0, 10).map((tx) => (
+                          <div 
+                            key={tx?.id || `tx-${Math.random()}`}
+                            className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                          >
+                            <div className="flex items-center gap-2">
                               <TrendingUp className="h-4 w-4 text-green-500" />
-                            ) : (
+                              <span className="text-sm">{tx?.description || 'Transaction'}</span>
+                            </div>
+                            <span className="text-sm font-semibold text-green-600">
+                              +{tx?.amount || 0} ACD
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-4">
+                          No earnings yet
+                        </p>
+                      )}
+                    </>
+                  )}
+
+                  {activeTab === 'spent' && (
+                    <>
+                      {transactions?.filter(tx => tx?.type === 'SPENDING')?.length > 0 ? (
+                        transactions.filter(tx => tx?.type === 'SPENDING').slice(0, 10).map((tx) => (
+                          <div 
+                            key={tx?.id || `tx-${Math.random()}`}
+                            className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                          >
+                            <div className="flex items-center gap-2">
                               <TrendingDown className="h-4 w-4 text-red-500" />
-                            )}
-                            <span className="text-sm">{tx?.description || 'Transaction'}</span>
+                              <span className="text-sm">{tx?.description || 'Transaction'}</span>
+                            </div>
+                            <span className="text-sm font-semibold text-red-600">
+                              -{tx?.amount || 0} ACD
+                            </span>
                           </div>
-                          <span className={`text-sm font-semibold ${
-                            tx?.type === 'EARNING' ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {tx?.type === 'EARNING' ? '+' : '-'}{tx?.amount || 0} ACD
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 text-center py-4">
-                        No transactions yet
-                      </p>
-                    )}
-                  </TabsContent>
-                  
-                  <TabsContent value="earned" className="mt-4 space-y-2">
-                    {transactions?.filter(tx => tx?.type === 'EARNING')?.length > 0 ? (
-                      transactions.filter(tx => tx?.type === 'EARNING').slice(0, 10).map((tx) => (
-                        <div 
-                          key={tx?.id || `tx-${Math.random()}`}
-                          className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
-                        >
-                          <div className="flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4 text-green-500" />
-                            <span className="text-sm">{tx?.description || 'Transaction'}</span>
-                          </div>
-                          <span className="text-sm font-semibold text-green-600">
-                            +{tx?.amount || 0} ACD
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 text-center py-4">
-                        No earnings yet
-                      </p>
-                    )}
-                  </TabsContent>
-                  
-                  <TabsContent value="spent" className="mt-4 space-y-2">
-                    {transactions?.filter(tx => tx?.type === 'SPENDING')?.length > 0 ? (
-                      transactions.filter(tx => tx?.type === 'SPENDING').slice(0, 10).map((tx) => (
-                        <div 
-                          key={tx?.id || `tx-${Math.random()}`}
-                          className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
-                        >
-                          <div className="flex items-center gap-2">
-                            <TrendingDown className="h-4 w-4 text-red-500" />
-                            <span className="text-sm">{tx?.description || 'Transaction'}</span>
-                          </div>
-                          <span className="text-sm font-semibold text-red-600">
-                            -{tx?.amount || 0} ACD
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 text-center py-4">
-                        No spending yet
-                      </p>
-                    )}
-                  </TabsContent>
-                </Tabs>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-4">
+                          No spending yet
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>

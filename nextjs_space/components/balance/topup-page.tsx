@@ -21,7 +21,6 @@ import {
   ArrowLeft,
   Lock
 } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 const cryptoOptions = [
@@ -106,14 +105,7 @@ export function TopUpPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <div className="relative w-6 h-6">
-                  <Image
-                    src="/acd_coin.png"
-                    alt="ACD Coin"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
+                <Wallet className="h-5 w-5" />
                 Current Balance
               </CardTitle>
             </CardHeader>

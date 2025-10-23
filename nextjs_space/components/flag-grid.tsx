@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -42,8 +43,8 @@ export function FlagGrid() {
                   href={`/country/${country?.code?.toLowerCase()}`}
                   className="group relative block"
                 >
-                  <div className="w-28 h-28 bg-white border-2 border-gray-200 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center group-hover:border-blue-400 overflow-hidden">
-                    <span className="text-9xl leading-none transition-transform duration-300">
+                  <div className="w-56 h-56 bg-white border-2 border-gray-200 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center group-hover:border-blue-400 overflow-hidden">
+                    <span className="text-[11rem] leading-none transition-transform duration-300">
                       {country?.flag}
                     </span>
                   </div>

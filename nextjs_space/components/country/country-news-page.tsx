@@ -1,12 +1,13 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { apiClient } from '@/lib/api';
 import { Article, Category } from '@/lib/types';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ArticleCard } from '@/components/articles/article-card';
 import { getTranslation } from '@/lib/i18n';
 import { Loader2, Newspaper } from 'lucide-react';
@@ -91,24 +92,32 @@ export function CountryNewsPage({ country }: CountryNewsPageProps) {
             </div>
           </div>
 
-          {/* Category Selector */}
-          <div className="flex items-center gap-4">
-            <Newspaper className="h-5 w-5 text-gray-600" />
-            <Select value={selectedCategory || 'all'} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-64">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('categories.recommended')}</SelectItem>
-                {categories?.map((category) => (
-                  <SelectItem key={category?.id || `cat-${Math.random()}`} value={category?.slug || 'unknown'}>
-                    {t(`categories.${category?.slug}`) !== `categories.${category?.slug}` 
-                      ? t(`categories.${category?.slug}`) 
-                      : category?.name || 'Unknown'}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Category List (Horizontal) */}
+          <div className="flex items-center gap-3">
+            <Newspaper className="h-5 w-5 text-gray-600 flex-shrink-0" />
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+              <Button
+                variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory('all')}
+                className="whitespace-nowrap"
+              >
+                {t('categories.recommended')}
+              </Button>
+              {categories?.map((category) => (
+                <Button
+                  key={category?.id || `cat-${Math.random()}`}
+                  variant={selectedCategory === category?.slug ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedCategory(category?.slug || 'all')}
+                  className="whitespace-nowrap"
+                >
+                  {t(`categories.${category?.slug}`) !== `categories.${category?.slug}` 
+                    ? t(`categories.${category?.slug}`) 
+                    : category?.name || 'Unknown'}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

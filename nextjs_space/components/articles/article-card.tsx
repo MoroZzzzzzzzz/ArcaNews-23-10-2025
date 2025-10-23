@@ -1,10 +1,11 @@
 
+
 'use client';
 
 import { Article } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ThumbsUp, ThumbsDown, MessageCircle, Eye } from 'lucide-react';
+import { ThumbsUp, MessageCircle, Eye } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import Image from 'next/image';
 
@@ -56,10 +57,6 @@ export function ArticleCard({ article }: ArticleCardProps) {
                 <span className="flex items-center gap-1">
                   <ThumbsUp className="h-4 w-4" />
                   {article?.likes_count || 0}
-                </span>
-                <span className="flex items-center gap-1">
-                  <ThumbsDown className="h-4 w-4" />
-                  {article?.dislikes_count || 0}
                 </span>
                 <span className="flex items-center gap-1">
                   <MessageCircle className="h-4 w-4" />

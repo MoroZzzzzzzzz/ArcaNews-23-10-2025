@@ -103,7 +103,7 @@ export function RegisterForm() {
             <div className="flex items-center justify-center gap-3">
               <div className="relative w-8 h-8">
                 <Image
-                  src="/acd_coin.png"
+                  src="https://cdn.abacus.ai/images/0ab4998b-8c9e-4d75-94fc-0014aaabf964.png"
                   alt="ACD Coin"
                   fill
                   className="object-contain"

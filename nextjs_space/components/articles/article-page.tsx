@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,7 +15,6 @@ import { BalanceDisplay } from '@/components/balance-display';
 import { getTranslation } from '@/lib/i18n';
 import { 
   ThumbsUp, 
-  ThumbsDown, 
   MessageCircle, 
   Send, 
   Loader2,
@@ -256,13 +256,6 @@ export function ArticlePage({ articleId }: ArticlePageProps) {
                     {article?.likes_count || 0}
                   </Button>
                   <span className="text-xs text-gray-500">0.1 ACD</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-gray-600">
-                    <ThumbsDown className="h-4 w-4" />
-                    {article?.dislikes_count || 0}
-                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">

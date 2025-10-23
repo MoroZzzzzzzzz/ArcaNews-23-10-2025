@@ -43,12 +43,10 @@ export function FlagGrid() {
                   href={`/country/${country?.code?.toLowerCase()}`}
                   className="group relative block"
                 >
-                  <div className="w-56 h-56 rounded-full shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center overflow-hidden relative">
-                    <span className="text-[11rem] leading-none transition-transform duration-300 relative z-10">
+                  <div className="relative inline-block">
+                    <span className="text-[11rem] leading-none block transition-all duration-300 drop-shadow-md group-hover:drop-shadow-xl group-hover:scale-110">
                       {country?.flag}
                     </span>
-                    {/* Subtle background glow on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full -z-0"></div>
                   </div>
                   
                   {/* Country name tooltip */}

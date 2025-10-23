@@ -1,0 +1,80 @@
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: arcadia_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-arcadia}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-arcadia_password}
+      POSTGRES_DB: ${POSTGRES_DB:-arcadia_news}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-arcadia}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - arcadia_network
+
+  # Next.js Application
+  nextjs:
+    build:
+      context: ./nextjs_space
+      dockerfile: Dockerfile
+    container_name: arcadia_nextjs
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-arcadia}:${POSTGRES_PASSWORD:-arcadia_password}@postgres:5432/${POSTGRES_DB:-arcadia_news}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - AWS_PROFILE=${AWS_PROFILE}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+      - AWS_FOLDER_PREFIX=${AWS_FOLDER_PREFIX}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/auth/providers', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - arcadia_network
+
+  # Nginx Reverse Proxy (опционально, для production)
+  nginx:
+    image: nginx:alpine
+    container_name: arcadia_nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - nextjs
+    networks:
+      - arcadia_network
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  arcadia_network:
+    driver: bridge

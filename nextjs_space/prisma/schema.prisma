@@ -8,3 +8,167 @@ datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
 }
+
+// User model
+model User {
+  id            Int       @id @default(autoincrement())
+  username      String    @unique
+  email         String    @unique
+  password      String    // Hashed password
+  firstName     String    @map("first_name")
+  lastName      String    @map("last_name")
+  isVerified    Boolean   @default(false) @map("is_verified")
+  avatar        String?
+  role          String    @default("user")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  
+  // Relations
+  articles      Article[]
+  comments      Comment[]
+  wallet        Wallet?
+  articleLikes  ArticleLike[]
+  
+  @@map("users")
+}
+
+// Category model
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  
+  // Relations
+  articles    Article[]
+  
+  @@map("categories")
+}
+
+// Article model
+model Article {
+  id            Int       @id @default(autoincrement())
+  title         String
+  content       String    @db.Text
+  summary       String?   @db.Text
+  language      String    @default("en")
+  status        ArticleStatus @default(DRAFT)
+  imageUrl      String?   @map("image_url")
+  videoUrl      String?   @map("video_url")
+  tags          String[]  @default([])
+  viewsCount    Int       @default(0) @map("views_count")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  
+  // Foreign keys
+  authorId      Int       @map("author_id")
+  categoryId    Int?      @map("category_id")
+  
+  // Relations
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  comments      Comment[]
+  likes         ArticleLike[]
+  
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([language])
+  @@index([status])
+  @@index([createdAt])
+  @@map("articles")
+}
+
+// Article likes/dislikes
+model ArticleLike {
+  id          Int       @id @default(autoincrement())
+  isLike      Boolean   @map("is_like") // true = like, false = dislike
+  createdAt   DateTime  @default(now()) @map("created_at")
+  
+  // Foreign keys
+  userId      Int       @map("user_id")
+  articleId   Int       @map("article_id")
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article     Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, articleId])
+  @@index([articleId])
+  @@map("article_likes")
+}
+
+// Comment model
+model Comment {
+  id          Int       @id @default(autoincrement())
+  content     String    @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  
+  // Foreign keys
+  authorId    Int       @map("author_id")
+  articleId   Int       @map("article_id")
+  parentId    Int?      @map("parent_id")
+  
+  // Relations
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  article     Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[] @relation("CommentReplies")
+  
+  @@index([authorId])
+  @@index([articleId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+// Wallet model
+model Wallet {
+  id            Int       @id @default(autoincrement())
+  balance       Float     @default(0.0)
+  totalEarned   Float     @default(0.0) @map("total_earned")
+  totalSpent    Float     @default(0.0) @map("total_spent")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  
+  // Foreign key
+  userId        Int       @unique @map("user_id")
+  
+  // Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
+  
+  @@map("wallets")
+}
+
+// Transaction model
+model Transaction {
+  id            Int       @id @default(autoincrement())
+  amount        Float
+  type          TransactionType
+  description   String
+  earningType   String?   @map("earning_type") // 'like', 'comment', 'article', etc.
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  // Foreign key
+  walletId      Int       @map("wallet_id")
+  
+  // Relations
+  wallet        Wallet    @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  
+  @@index([walletId])
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+// Enums
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum TransactionType {
+  EARNING
+  SPENDING
+}
